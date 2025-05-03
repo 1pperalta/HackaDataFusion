@@ -97,3 +97,6 @@ Thumbs.db
 *.gz
 *.bz2
 *.xz
+
+.env
+*.env
