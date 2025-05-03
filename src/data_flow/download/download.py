@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 """
-GitHub Archive Downloader Mejorado
+GitHub Archive Downloader
 
 Este script descarga datos de eventos de GitHub desde gharchive.org
 y los almacena en la carpeta data/raw del proyecto.
 
 Características:
-- Verificación previa de disponibilidad de archivos
 - Descarga paralela de archivos para mejor rendimiento
-- Manejo inteligente de archivos no disponibles
+- Manejo de errores y reintentos
 - Verificación de integridad de los archivos
 - Soporte para rangos de fechas personalizados
 """
@@ -22,7 +21,7 @@ import gzip
 import json
 import concurrent.futures
 from pathlib import Path
-from typing import List, Dict, Tuple, Optional, Set
+from typing import List, Dict, Tuple, Optional
 import hashlib
 import time
 
@@ -46,9 +45,8 @@ GH_ARCHIVE_BASE_URL = "https://data.gharchive.org"
 # Directorio para almacenar los datos
 RAW_DATA_DIR = Path("data/raw")
 
-
 class GitHubArchiveDownloader:
-    """Descargador de archivos de GitHub Archive con verificación previa de disponibilidad"""
+    """Descargador de archivos de GitHub Archive"""
     
     def __init__(
         self, 
@@ -57,8 +55,7 @@ class GitHubArchiveDownloader:
         output_dir: Path = RAW_DATA_DIR,
         max_workers: int = 5,
         retry_attempts: int = 3,
-        retry_delay: int = 5,
-        check_availability: bool = True
+        retry_delay: int = 5
     ):
         """
         Inicializa el descargador de GitHub Archive
@@ -70,7 +67,6 @@ class GitHubArchiveDownloader:
             max_workers: Número máximo de trabajadores para descargas paralelas
             retry_attempts: Número de intentos de reintento para descargas fallidas
             retry_delay: Tiempo de espera entre reintentos (segundos)
-            check_availability: Si se debe verificar disponibilidad antes de descargar
         """
         self.start_date = start_date
         self.end_date = end_date
@@ -78,7 +74,6 @@ class GitHubArchiveDownloader:
         self.max_workers = max_workers
         self.retry_attempts = retry_attempts
         self.retry_delay = retry_delay
-        self.check_availability = check_availability
         
         # Crear directorio de salida si no existe
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -89,24 +84,6 @@ class GitHubArchiveDownloader:
         
         if (self.end_date - self.start_date).days > 7:
             raise ValueError("El período máximo permitido para el hackathon es de 7 días")
-    
-    def check_file_availability(self, url: str) -> bool:
-        """
-        Verifica si un archivo está disponible sin descargarlo completamente
-        
-        Args:
-            url: URL del archivo a verificar
-            
-        Returns:
-            True si el archivo está disponible, False en caso contrario
-        """
-        try:
-            # Realizar solicitud HEAD para verificar disponibilidad
-            response = requests.head(url, timeout=5)
-            return response.status_code == 200
-        except requests.RequestException as e:
-            logger.warning(f"Error al verificar disponibilidad de {url}: {e}")
-            return False
     
     def generate_hour_urls(self) -> List[Tuple[str, Path]]:
         """
@@ -129,15 +106,7 @@ class GitHubArchiveDownloader:
             
             target_path = date_dir / file_name
             
-            # Si la verificación de disponibilidad está activada, comprobar primero
-            if self.check_availability:
-                if self.check_file_availability(url):
-                    urls.append((url, target_path))
-                else:
-                    logger.info(f"Archivo {url} no está disponible, omitiendo")
-            else:
-                urls.append((url, target_path))
-            
+            urls.append((url, target_path))
             current_date += datetime.timedelta(hours=1)
         
         return urls
@@ -249,11 +218,6 @@ class GitHubArchiveDownloader:
         logger.info(f"Descargando {total_hours} archivos de GitHub Archive")
         logger.info(f"Período: {self.start_date} a {self.end_date}")
         
-        # Si no hay archivos disponibles
-        if total_hours == 0:
-            logger.warning("No se encontraron archivos disponibles para descargar")
-            return results
-        
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             future_to_url = {executor.submit(self.process_url, url_info): url_info for url_info in urls}
             
@@ -301,72 +265,6 @@ class GitHubArchiveDownloader:
             "total_size_bytes": total_size,
             "total_size_mb": total_size / (1024 * 1024)
         }
-    
-    def get_available_dates(self) -> Set[datetime.date]:
-        """
-        Obtiene las fechas disponibles en los archivos descargados
-        
-        Returns:
-            Conjunto de fechas disponibles
-        """
-        dates = set()
-        
-        for root, _, files in os.walk(self.output_dir):
-            for file in files:
-                if file.endswith(".json.gz"):
-                    try:
-                        # Extraer fecha del nombre del archivo
-                        date_str = file.split(".")[0][:10]  # '2025-05-01'
-                        date = datetime.datetime.strptime(date_str, '%Y-%m-%d').date()
-                        dates.add(date)
-                    except (ValueError, IndexError):
-                        continue
-        
-        return dates
-    
-    def scan_available_pattern(self) -> Dict[str, List[int]]:
-        """
-        Analiza el patrón de disponibilidad de los archivos
-        
-        Returns:
-            Diccionario con {fecha: [horas_disponibles]}
-        """
-        availability = {}
-        
-        # Primero intentar buscar archivos descargados
-        for root, _, files in os.walk(self.output_dir):
-            for file in files:
-                if file.endswith(".json.gz"):
-                    try:
-                        # Extraer fecha y hora del nombre del archivo
-                        date_hour = file.split(".")[0]  # '2025-05-01-10'
-                        date_str = date_hour[:10]  # '2025-05-01'
-                        hour = int(date_hour[11:13])  # 10
-                        
-                        if date_str not in availability:
-                            availability[date_str] = []
-                        
-                        availability[date_str].append(hour)
-                    except (ValueError, IndexError):
-                        continue
-        
-        # Si no hay archivos descargados, verificar disponibilidad en línea
-        if not availability:
-            current_date = self.start_date
-            while current_date < self.end_date:
-                date_str = current_date.strftime('%Y-%m-%d')
-                availability[date_str] = []
-                
-                for hour in range(24):
-                    file_name = f"{date_str}-{hour:02d}.json.gz"
-                    url = f"{GH_ARCHIVE_BASE_URL}/{file_name}"
-                    
-                    if self.check_file_availability(url):
-                        availability[date_str].append(hour)
-                
-                current_date += datetime.timedelta(days=1)
-        
-        return availability
 
 
 def parse_arguments():
@@ -376,7 +274,7 @@ def parse_arguments():
     Returns:
         Argumentos parseados
     """
-    parser = argparse.ArgumentParser(description="Descargador mejorado de datos de GitHub Archive")
+    parser = argparse.ArgumentParser(description="Descargador de datos de GitHub Archive")
     
     # Argumentos para fechas
     parser.add_argument(
@@ -415,24 +313,6 @@ def parse_arguments():
         help="Tiempo de espera entre reintentos en segundos (default: 5)"
     )
     
-    parser.add_argument(
-        "--check-availability",
-        action="store_true",
-        help="Verificar disponibilidad de archivos antes de descargar"
-    )
-    
-    parser.add_argument(
-        "--analyze-only",
-        action="store_true",
-        help="Solo analizar disponibilidad sin descargar"
-    )
-    
-    parser.add_argument(
-        "--smart-hours",
-        action="store_true",
-        help="Descargar solo horas disponibles según patrón observado (10-23)"
-    )
-    
     args = parser.parse_args()
     
     # Convertir fechas a datetime con hora
@@ -451,68 +331,15 @@ def main():
         # Parsear argumentos
         args = parse_arguments()
         
-        # Inicializar descargador
+        # Inicializar y ejecutar descargador
         downloader = GitHubArchiveDownloader(
             start_date=args.start_date,
             end_date=args.end_date,
             max_workers=args.max_workers,
             retry_attempts=args.retry_attempts,
-            retry_delay=args.retry_delay,
-            check_availability=args.check_availability
+            retry_delay=args.retry_delay
         )
         
-        # Si solo queremos analizar disponibilidad
-        if args.analyze_only:
-            print("\n🔍 Analizando disponibilidad de archivos...")
-            availability = downloader.scan_available_pattern()
-            
-            for date_str, hours in availability.items():
-                hours.sort()
-                print(f"📅 {date_str}: {len(hours)} horas disponibles")
-                print(f"  ⏰ Horas: {', '.join(f'{h:02d}' for h in hours)}")
-            
-            print("\n📊 Patrón de disponibilidad detectado:")
-            
-            # Detectar patrón
-            pattern = {}
-            for date_str, hours in availability.items():
-                if hours:
-                    min_hour = min(hours)
-                    max_hour = max(hours)
-                    print(f"  📅 {date_str}: Archivos disponibles desde hora {min_hour:02d} hasta {max_hour:02d}")
-                    pattern[date_str] = (min_hour, max_hour)
-                else:
-                    print(f"  📅 {date_str}: No hay archivos disponibles")
-            
-            return 0
-        
-        # Si queremos usar solo las horas que sabemos disponibles
-        if args.smart_hours:
-            # Modificar el rango de horas para solo descargar 10-23 cada día
-            modified_start = args.start_date.replace(hour=10)
-            modified_end = args.end_date
-            
-            # Si la fecha de inicio es hoy, ajustar la hora final
-            if modified_start.date() == modified_end.date():
-                # Solo descargar hasta la hora actual
-                current_hour = datetime.datetime.now().hour
-                end_hour = min(23, current_hour)
-                modified_end = args.end_date.replace(hour=end_hour)
-            
-            # Crear nuevo descargador con fechas modificadas
-            downloader = GitHubArchiveDownloader(
-                start_date=modified_start,
-                end_date=modified_end,
-                max_workers=args.max_workers,
-                retry_attempts=args.retry_attempts,
-                retry_delay=args.retry_delay,
-                check_availability=args.check_availability
-            )
-            
-            print(f"\n⚙️ Usando modo inteligente de descarga:")
-            print(f"   Descargando solo horas 10-23 de cada día del {modified_start.strftime('%Y-%m-%d')} al {modified_end.strftime('%Y-%m-%d')}")
-        
-        # Ejecutar descarga
         results = downloader.run()
         
         # Obtener estadísticas
@@ -523,28 +350,20 @@ def main():
         successful = sum(1 for success in results.values() if success)
         total = len(results)
         
-        if successful == total and total > 0:
+        if successful == total:
             logger.info(f"Descarga exitosa: {successful}/{total} archivos")
             print(f"\n✅ Descarga completada exitosamente: {successful}/{total} archivos")
             print(f"📊 Total descargado: {stats['total_size_mb']:.2f} MB en {stats['total_files']} archivos")
             print(f"📂 Archivos guardados en: {RAW_DATA_DIR}")
             return 0
-        elif successful > 0:
-            logger.warning(f"Descarga completada con advertencias: {successful}/{total} archivos")
+        else:
+            logger.warning(f"Descarga completada con errores: {successful}/{total} archivos")
             failed_files = [str(path) for path, success in results.items() if not success]
             logger.warning(f"Archivos fallidos: {failed_files}")
             print(f"\n⚠️ Descarga completada con advertencias: {successful}/{total} archivos")
             print(f"❌ {total - successful} archivos fallaron, ver logs para detalles")
             print(f"📊 Total descargado: {stats['total_size_mb']:.2f} MB en {stats['total_files']} archivos")
             return 1
-        else:
-            logger.error("No se pudieron descargar archivos")
-            print("\n❌ No se pudieron descargar archivos")
-            if args.check_availability:
-                print("💡 Intente usar --analyze-only para verificar disponibilidad")
-            else:
-                print("💡 Intente usar --check-availability para verificar disponibilidad primero")
-            return 2
     
     except KeyboardInterrupt:
         logger.info("Descarga interrumpida por el usuario")
