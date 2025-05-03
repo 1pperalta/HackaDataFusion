@@ -53,6 +53,7 @@ venv.bak/
 *.feather
 *.orc
 *.jsonl
+*.json.gz
 
 # Data analysis / machine learning
 *.pkl
