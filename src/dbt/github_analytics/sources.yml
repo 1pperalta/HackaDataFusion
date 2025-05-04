@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: github
+    database: GITHUB_DATA
+    schema: BRONZE
+    tables:
+      - name: EVENTS
+        description: "Eventos de GitHub en formato raw"

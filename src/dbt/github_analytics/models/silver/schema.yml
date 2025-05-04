@@ -1,0 +1,34 @@
+# models/silver/schema.yml
+version: 2
+
+models:
+  - name: silver_events
+    description: "Eventos de GitHub normalizados y enriquecidos"
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - event_id
+            - event_hash
+    columns:
+      - name: event_id
+        description: "ID único del evento de GitHub"
+        tests:
+          - not_null
+      
+      - name: event_hash
+        description: "Hash MD5 único del evento"
+        tests:
+          - not_null
+      
+      - name: event_type
+        description: "Tipo de evento de GitHub (PushEvent, PullRequestEvent, etc.)"
+        tests:
+          - not_null
+      
+      - name: created_at_ts
+        description: "Timestamp ISO normalizado del evento"
+        tests:
+          - not_null
+      
+      - name: created_at_date
+        description: "Fecha del evento (sin componente de hora)"

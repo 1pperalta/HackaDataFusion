@@ -43,8 +43,8 @@ logging.basicConfig(
 logger = logging.getLogger("silver_processor")
 
 # Directorios para bronze data y silver data
-BRONZE_DATA_DIR = Path("data/bronze")
-SILVER_DATA_DIR = Path("data/silver")
+BRONZE_DATA_DIR = Path("data/processed/bronze")
+SILVER_DATA_DIR = Path("data/processed/silver")
 
 # Crear directorios si no existen
 Path("logs").mkdir(exist_ok=True)

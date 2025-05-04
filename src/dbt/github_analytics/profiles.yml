@@ -1,0 +1,14 @@
+hackadatafusion:
+  target: dev
+  outputs:
+    dev:
+      type: snowflake
+      account: idlkunk-ax51793
+      user: AARIAS04
+      password: "MinisterArias04"  # O usa una variable de entorno
+      role: ACCOUNTADMIN
+      database: GITHUB_DATA
+      warehouse: COMPUTE_WH
+      schema: bronze
+      threads: 4
+      client_session_keep_alive: True
