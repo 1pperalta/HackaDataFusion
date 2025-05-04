@@ -107,9 +107,10 @@ Key insights include:
 
 ## 👥 Team
 
-- [Team Member 1] - Data Engineer
-- [Team Member 2] - Data Scientist
-- [Team Member 3] - Data Engineer/Scientist
+- Roy Sandoval - Data Scientist/Machine Learning Engineer
+- Andrés Arias - Data Scientist
+- Pablo Peralta - Data Scientist
+- Felipe Buitrago - Data Engineer @Globant
 
 ## 📄 License
 
