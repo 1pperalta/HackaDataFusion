@@ -1,0 +1,30 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: GITHUB_DATA
+    schema: BRONZE
+    tables:
+      - name: EVENTS
+        description: "Eventos de GitHub en formato raw"
+        columns:
+          - name: event_hash
+            description: "MD5 hash del evento para identificación única"
+          - name: event_id
+            description: "ID del evento de GitHub"
+          - name: event_type
+            description: "Tipo de evento (PushEvent, PullRequestEvent, etc.)"
+          - name: created_at
+            description: "Fecha y hora de creación del evento"
+          - name: actor_id
+            description: "ID del usuario que generó el evento"
+          - name: actor_login
+            description: "Username del usuario que generó el evento"
+          - name: repo_id
+            description: "ID del repositorio"
+          - name: repo_name
+            description: "Nombre completo del repositorio"
+          - name: payload
+            description: "Información detallada del evento en formato JSON"
+          - name: raw_data
+            description: "Evento completo en formato JSON"

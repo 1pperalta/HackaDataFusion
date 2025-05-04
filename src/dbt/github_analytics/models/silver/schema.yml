@@ -1,0 +1,104 @@
+version: 2
+
+models:
+  - name: silver_events
+    description: "Eventos de GitHub normalizados"
+    columns:
+      - name: event_id
+        description: "ID único del evento"
+        tests:
+          - unique
+          - not_null
+      - name: event_hash
+        description: "Hash MD5 único del evento"
+        tests:
+          - unique
+          - not_null
+      - name: event_type
+        description: "Tipo de evento"
+        tests:
+          - not_null
+      - name: created_at_ts
+        description: "Timestamp normalizado de creación"
+        tests:
+          - not_null
+      - name: is_bot
+        description: "Indica si el actor es un bot"
+
+  - name: silver_actors
+    description: "Actores (usuarios) normalizados"
+    columns:
+      - name: actor_id
+        description: "ID único del actor"
+        tests:
+          - unique
+          - not_null
+      - name: actor_login
+        description: "Nombre de usuario del actor"
+        tests:
+          - not_null
+      - name: first_seen_at
+        description: "Primera vez que se vio al actor"
+        tests:
+          - not_null
+      - name: last_seen_at
+        description: "Última vez que se vio al actor"
+        tests:
+          - not_null
+
+  - name: silver_repositories
+    description: "Repositorios normalizados"
+    columns:
+      - name: repo_id
+        description: "ID único del repositorio"
+        tests:
+          - unique
+          - not_null
+      - name: repo_name
+        description: "Nombre completo del repositorio"
+        tests:
+          - not_null
+      - name: owner_login
+        description: "Propietario del repositorio"
+      - name: first_seen_at
+        description: "Primera vez que se vio el repositorio"
+        tests:
+          - not_null
+      - name: last_seen_at
+        description: "Última vez que se vio el repositorio"
+        tests:
+          - not_null
+
+  - name: silver_organizations
+    description: "Organizaciones normalizadas"
+    columns:
+      - name: org_id
+        description: "ID único de la organización"
+        tests:
+          - unique
+          - not_null
+      - name: org_login
+        description: "Nombre de la organización"
+        tests:
+          - not_null
+      - name: first_seen_at
+        description: "Primera vez que se vio la organización"
+        tests:
+          - not_null
+      - name: last_seen_at
+        description: "Última vez que se vio la organización"
+        tests:
+          - not_null
+
+  - name: silver_payload_details
+    description: "Detalles específicos del payload según tipo de evento"
+    columns:
+      - name: event_id
+        description: "ID de evento asociado al payload"
+        tests:
+          - unique
+          - not_null
+      - name: event_type
+        description: "Tipo de evento"
+        tests:
+          - not_null

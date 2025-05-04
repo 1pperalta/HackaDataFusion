@@ -42,8 +42,24 @@ logger = logging.getLogger("github_downloader")
 # URL base de GitHub Archive
 GH_ARCHIVE_BASE_URL = "https://data.gharchive.org"
 
-# Directorio para almacenar los datos
-RAW_DATA_DIR = Path("data/raw")
+# Obtener la ruta absoluta a la raíz del proyecto
+# Esto asume que este script está ubicado en src/data_flow/download/download.py
+SCRIPT_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = SCRIPT_DIR
+# Navegar hacia arriba hasta encontrar la raíz del proyecto (donde está la carpeta data o hasta llegar a 3 niveles)
+for _ in range(4):  # Máximo 4 niveles hacia arriba (por si el script está más anidado)
+    if (PROJECT_ROOT / "data").exists():
+        break
+    PROJECT_ROOT = PROJECT_ROOT.parent
+
+# Asegurar que tenemos la ruta correcta a data/raw
+RAW_DATA_DIR = PROJECT_ROOT / "data" / "raw"
+
+# Mostrar las rutas para diagnosticar problemas
+print(f"📂 Script ubicado en: {SCRIPT_DIR}")
+print(f"📂 Raíz del proyecto detectada en: {PROJECT_ROOT}")
+print(f"📂 Los archivos se guardarán en: {RAW_DATA_DIR}")
+
 
 class GitHubArchiveDownloader:
     """Descargador de archivos de GitHub Archive"""
@@ -211,6 +227,24 @@ class GitHubArchiveDownloader:
         Returns:
             Diccionario con {ruta_destino: éxito}
         """
+        # Imprimir información para diagnóstico
+        print(f"\n📂 Directorio de descarga (absoluto): {self.output_dir.absolute()}")
+        print(f"📂 Directorio de trabajo actual: {Path.cwd().absolute()}")
+        
+        # Verificar que el directorio sea escribible
+        if not os.access(self.output_dir, os.W_OK):
+            print(f"⚠️ ADVERTENCIA: No tienes permisos de escritura en {self.output_dir}!")
+            # Intentar crear un archivo de prueba
+            try:
+                test_file = self.output_dir / "test_write_permission.txt"
+                with open(test_file, "w") as f:
+                    f.write("test")
+                test_file.unlink()  # Eliminar archivo de prueba
+                print("✅ Prueba de escritura exitosa a pesar de la advertencia.")
+            except Exception as e:
+                print(f"❌ Error al intentar escribir archivo de prueba: {e}")
+                print("   Intentando continuar de todos modos...")
+        
         urls = self.generate_hour_urls()
         results = {}
         
@@ -313,6 +347,13 @@ def parse_arguments():
         help="Tiempo de espera entre reintentos en segundos (default: 5)"
     )
     
+    # Argumento para forzar ubicación en raíz del proyecto
+    parser.add_argument(
+        "--project-root",
+        type=str,
+        help="Ruta absoluta a la raíz del proyecto (opcional)"
+    )
+    
     args = parser.parse_args()
     
     # Convertir fechas a datetime con hora
@@ -331,10 +372,37 @@ def main():
         # Parsear argumentos
         args = parse_arguments()
         
+        # Si se especificó una raíz de proyecto, usarla
+        global RAW_DATA_DIR
+        if args.project_root:
+            project_root = Path(args.project_root)
+            RAW_DATA_DIR = project_root / "data" / "raw"
+            print(f"📂 Usando raíz del proyecto especificada: {project_root}")
+            print(f"📂 Los datos se guardarán en: {RAW_DATA_DIR}")
+        
+        # Buscar data/raw en ubicaciones alternativas si no se encontró
+        if not RAW_DATA_DIR.parent.exists():
+            alternative_paths = [
+                Path.cwd() / "data" / "raw",  # Directorio actual
+                Path.home() / "Documents" / "HackaDataFusion" / "data" / "raw",  # Ubicación común
+                Path("/Users/andresariasmedina/Documents/HackaDataFusion/data/raw")  # Ubicación específica
+            ]
+            
+            for path in alternative_paths:
+                if path.parent.exists() or path.parent.parent.exists():
+                    RAW_DATA_DIR = path
+                    print(f"📂 Usando ubicación alternativa para los datos: {RAW_DATA_DIR}")
+                    break
+        
+        # Asegurar que el directorio de datos existe
+        RAW_DATA_DIR.parent.mkdir(parents=True, exist_ok=True)
+        RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
+        
         # Inicializar y ejecutar descargador
         downloader = GitHubArchiveDownloader(
             start_date=args.start_date,
             end_date=args.end_date,
+            output_dir=RAW_DATA_DIR,
             max_workers=args.max_workers,
             retry_attempts=args.retry_attempts,
             retry_delay=args.retry_delay
