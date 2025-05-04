@@ -16,7 +16,8 @@ This project implements a modern data pipeline with the Medallion Architecture:
 - **Silver Layer**: Cleaned and normalized data
 - **Gold Layer**: Business-level aggregations and metrics
 
-![Data Pipeline Architecture](docs/architecture_diagram.png)
+![Data Pipeline Architecture](https://raw.githubusercontent.com/1pperalta/HackaDataFusion/main/master_pipeline.jpg)
+
 
 ## 📦 Repository Structure
 
