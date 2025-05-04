@@ -108,10 +108,11 @@ Key insights include:
 
 ## 👥 Team
 
-- Roy Sandoval - Data Scientist/Machine Learning Engineer
+We are a team made of data science engineering students at UPB
+- Roy Sandoval - Machine Learning Engineer/Data Scientist
 - Andrés Arias - Data Scientist
 - Pablo Peralta - Data Scientist
-- Felipe Buitrago - Data Engineer @Globant
+- Felipe Buitrago - Data Engineer @ Globant
 
 ## 📄 License
 
