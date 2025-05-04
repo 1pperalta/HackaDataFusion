@@ -1,8 +1,8 @@
-name: 'hackadatafusion'
+name: 'github_analytics'
 version: '1.0.0'
 config-version: 2
 
-profile: 'hackadatafusion'
+profile: 'github_analytics'
 
 model-paths: ["models"]
 analysis-paths: ["analyses"]
@@ -16,10 +16,15 @@ clean-targets:
   - "dbt_packages"
 
 models:
-  hackadatafusion:
+  github_analytics:
+    bronze:
+      +materialized: view
+      +schema: bronze
     silver:
-      +schema: silver
       +materialized: incremental
+      +schema: silver
+      +tags: ["silver"]
     gold:
-      +schema: gold
       +materialized: table
+      +schema: gold
+      +tags: ["gold"]

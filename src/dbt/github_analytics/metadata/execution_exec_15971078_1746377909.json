@@ -1,0 +1,103 @@
+{
+  "execution_id": "exec_15971078_1746377909",
+  "start_time": "2025-05-04T11:58:29.503090",
+  "status": "error",
+  "config": {
+    "project_name": "HackaDataFusion",
+    "environment": "development",
+    "download": {
+      "start_date": "2023-05-01",
+      "end_date": "2023-05-03",
+      "max_workers": 5,
+      "retry_attempts": 3,
+      "retry_delay": 5,
+      "event_types": []
+    },
+    "s3_upload": {
+      "enabled": true,
+      "bucket": "hackadatafusion-bucket",
+      "prefix": "github-archive",
+      "region": "us-east-1",
+      "max_workers": 5,
+      "profile": null
+    },
+    "data_quality": {
+      "enabled": true,
+      "min_file_size_bytes": 1000,
+      "max_error_rate": 0.05,
+      "schema_validation": true,
+      "custom_rules": []
+    },
+    "data_catalog": {
+      "enabled": false,
+      "catalog_type": "local",
+      "update_on_success": true,
+      "glue": {
+        "database": "github_analytics",
+        "update_partitions": true
+      },
+      "datahub": {
+        "url": "http://localhost:8080",
+        "token": ""
+      }
+    },
+    "notifications": {
+      "enabled": false,
+      "type": "slack",
+      "on_success": true,
+      "on_error": true,
+      "slack_webhook_url": "",
+      "email_server": "smtp.example.com",
+      "email_port": 587,
+      "email_use_tls": true,
+      "email_username": "",
+      "email_password": "",
+      "email_sender": "pipeline@example.com",
+      "email_recipients": []
+    },
+    "metadata": {
+      "tracking_enabled": true,
+      "store_location": "metadata/",
+      "retention_days": 30
+    },
+    "logging": {
+      "level": "INFO",
+      "file_rotation_size_mb": 10,
+      "file_backup_count": 5
+    },
+    "performance": {
+      "file_chunk_size_mb": 8,
+      "batch_size": 100
+    }
+  },
+  "steps": {
+    "download": {
+      "command": [
+        "/Users/andresariasmedina/Library/Caches/pypoetry/virtualenvs/hackadatafusion-EJdpfypV-py3.9/bin/python",
+        "/Users/andresariasmedina/Documents/HackaDataFusion/src/data_flow/download/download.py",
+        "--start-date",
+        "2023-05-01",
+        "--end-date",
+        "2023-05-03",
+        "--max-workers",
+        "5",
+        "--retry-attempts",
+        "3"
+      ],
+      "exit_code": 1,
+      "start_time": 1746377909.503853,
+      "end_time": 1746378021.514658,
+      "duration_seconds": 112.01079487800598,
+      "status": "error"
+    }
+  },
+  "end_time": "2025-05-04T12:00:21.516407",
+  "duration_seconds": 112.01264500617981,
+  "errors": [
+    {
+      "step": "download",
+      "error": "",
+      "exit_code": 1
+    }
+  ]
+}
