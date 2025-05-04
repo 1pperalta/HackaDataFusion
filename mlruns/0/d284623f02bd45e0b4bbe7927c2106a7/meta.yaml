@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/HackaData/HackaDataFusion/mlruns/0/d284623f02bd45e0b4bbe7927c2106a7/artifacts
+end_time: 1746383832937
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: d284623f02bd45e0b4bbe7927c2106a7
+run_name: crawling-dolphin-520
+run_uuid: d284623f02bd45e0b4bbe7927c2106a7
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1746383832888
+status: 3
+tags: []
+user_id: padap

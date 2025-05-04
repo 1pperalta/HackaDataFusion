@@ -14,13 +14,20 @@ dependencies = [
     "tqdm (>=4.67.1,<5.0.0)",
     "snowflake-connector-python (>=3.15.0,<4.0.0)",
     "pandas (>=2.2.3,<3.0.0)",
-    "dbt-snowflake (>=1.9.4,<2.0.0)"
+    "dbt-snowflake (>=1.9.4,<2.0.0)",
+    "mlflow (>=2.0.0,<3.0.0)",
+    "scikit-learn (>=1.6.1,<2.0.0)"
 ]
 
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+packages = [
+    { include = "src" }
+]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.5"
