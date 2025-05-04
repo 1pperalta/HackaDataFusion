@@ -1,0 +1,15 @@
+artifact_uri: file:///C:/HackaData/HackaDataFusion/mlruns/0/950ee2072bb44d4b85739f9a4b9a03ec/artifacts
+end_time: 1746382253491
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 950ee2072bb44d4b85739f9a4b9a03ec
+run_name: stylish-crane-40
+run_uuid: 950ee2072bb44d4b85739f9a4b9a03ec
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1746382253369
+status: 3
+tags: []
+user_id: padap
