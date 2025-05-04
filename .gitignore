@@ -43,7 +43,7 @@ venv.bak/
 *.dat
 *.data
 *.log
-*.sql
+#*.sql
 *.db
 *.sqlite
 *.sqlite3
