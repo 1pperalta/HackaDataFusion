@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Estilos y definiciones -->
+  <defs>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2c3e50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a2533;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="ingestionGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#3498db;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#2980b9;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="medallionGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2ecc71;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#27ae60;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="modelingGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e74c3c;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#c0392b;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="visualizationGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#9b59b6;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#8e44ad;stop-opacity:0.8" />
+    </linearGradient>
+    
+    <!-- Definición de flecha -->
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+    refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#607D8B" />
+    </marker>
+  </defs>
+  
+  <!-- Título principal -->
+  <rect x="0" y="0" width="1000" height="60" rx="5" ry="5" fill="url(#headerGrad)" />
+  <text x="500" y="38" font-family="Arial" font-size="24" fill="white" text-anchor="middle">HackaDataFusion: Arquitectura del Pipeline Completo</text>
+  
+  <!-- Pipeline Maestro -->
+  <rect x="25" y="80" width="950" height="500" rx="15" ry="15" fill="#f5f5f5" stroke="#ddd" stroke-width="2" />
+  <text x="500" y="110" font-family="Arial" font-size="22" fill="#333" text-anchor="middle" font-weight="bold">Pipeline Maestro</text>
+  
+  <!-- Pipeline de Ingestión -->
+  <rect x="50" y="140" width="200" height="400" rx="10" ry="10" fill="url(#ingestionGrad)" stroke="#2980b9" stroke-width="2" />
+  <text x="150" y="170" font-family="Arial" font-size="18" fill="white" text-anchor="middle" font-weight="bold">Pipeline de Ingestión</text>
+  
+  <rect x="70" y="190" width="160" height="60" rx="5" ry="5" fill="white" stroke="#2980b9" stroke-width="1" />
+  <text x="150" y="225" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">GitHub Archive</text>
+  
+  <rect x="70" y="270" width="160" height="60" rx="5" ry="5" fill="white" stroke="#2980b9" stroke-width="1" />
+  <text x="150" y="305" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">Descarga de Datos</text>
+  
+  <rect x="70" y="350" width="160" height="60" rx="5" ry="5" fill="white" stroke="#2980b9" stroke-width="1" />
+  <text x="150" y="385" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">Validación de Datos</text>
+  
+  <rect x="70" y="430" width="160" height="60" rx="5" ry="5" fill="white" stroke="#2980b9" stroke-width="1" />
+  <text x="150" y="465" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">Almacenamiento S3</text>
+  
+  <!-- Pipeline de Medallion -->
+  <rect x="280" y="140" width="400" height="400" rx="10" ry="10" fill="url(#medallionGrad)" stroke="#27ae60" stroke-width="2" />
+  <text x="480" y="170" font-family="Arial" font-size="18" fill="white" text-anchor="middle" font-weight="bold">Pipeline de Medallion</text>
+  
+  <!-- Bronze -->
+  <rect x="300" y="190" width="110" height="80" rx="5" ry="5" fill="white" stroke="#27ae60" stroke-width="1" />
+  <text x="355" y="215" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">Bronze</text>
+  <text x="355" y="235" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">Datos Crudos</text>
+  <text x="355" y="255" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">Formateo inicial</text>
+  
+  <!-- Silver -->
+  <rect x="425" y="190" width="110" height="80" rx="5" ry="5" fill="white" stroke="#27ae60" stroke-width="1" />
+  <text x="480" y="215" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">Silver</text>
+  <text x="480" y="235" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">Normalización</text>
+  <text x="480" y="255" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">Limpieza</text>
+  
+  <!-- Gold -->
+  <rect x="550" y="190" width="110" height="80" rx="5" ry="5" fill="white" stroke="#27ae60" stroke-width="1" />
+  <text x="605" y="215" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">Gold</text>
+  <text x="605" y="235" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">Agregaciones</text>
+  <text x="605" y="255" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">Métricas</text>
+  
+  <!-- Integraciones -->
+  <rect x="300" y="290" width="360" height="70" rx="5" ry="5" fill="white" stroke="#27ae60" stroke-width="1" />
+  <text x="480" y="320" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">DBT: Transformaciones y Modelos</text>
+  <text x="480" y="340" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">SQL declarativo | Pruebas | Documentación</text>
+  
+  <!-- Snowflake -->
+  <rect x="300" y="380" width="160" height="60" rx="5" ry="5" fill="white" stroke="#27ae60" stroke-width="1" />
+  <text x="380" y="415" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">Snowflake</text>
+  
+  <!-- S3 Storage -->
+  <rect x="500" y="380" width="160" height="60" rx="5" ry="5" fill="white" stroke="#27ae60" stroke-width="1" />
+  <text x="580" y="415" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">Almacén S3</text>
+  
+  <!-- Capa de Calidad -->
+  <rect x="300" y="460" width="360" height="60" rx="5" ry="5" fill="white" stroke="#27ae60" stroke-width="1" />
+  <text x="480" y="495" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">Pruebas de Calidad de Datos</text>
+  
+  <!-- Pipeline de Modelado -->
+  <rect x="710" y="140" width="240" height="200" rx="10" ry="10" fill="url(#modelingGrad)" stroke="#c0392b" stroke-width="2" />
+  <text x="830" y="170" font-family="Arial" font-size="18" fill="white" text-anchor="middle" font-weight="bold">Pipeline de Modelado</text>
+  
+  <rect x="730" y="190" width="200" height="60" rx="5" ry="5" fill="white" stroke="#c0392b" stroke-width="1" />
+  <text x="830" y="225" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">Análisis de Clustering</text>
+  
+  <rect x="730" y="260" width="200" height="60" rx="5" ry="5" fill="white" stroke="#c0392b" stroke-width="1" />
+  <text x="830" y="295" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">Publicación de Resultados</text>
+  
+  <!-- Visualización -->
+  <rect x="710" y="360" width="240" height="180" rx="10" ry="10" fill="url(#visualizationGrad)" stroke="#8e44ad" stroke-width="2" />
+  <text x="830" y="390" font-family="Arial" font-size="18" fill="white" text-anchor="middle" font-weight="bold">Visualización</text>
+  
+  <rect x="730" y="410" width="200" height="110" rx="5" ry="5" fill="white" stroke="#8e44ad" stroke-width="1" />
+  <text x="830" y="440" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">Tableau</text>
+  <text x="830" y="465" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">Dashboards</text>
+  <text x="830" y="485" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">Reportes</text>
+  <text x="830" y="505" font-family="Arial" font-size="12" fill="#666" text-anchor="middle">Análisis interactivos</text>
+  
+  <!-- Flechas de conexión entre componentes -->
+  <!-- Ingestión a Medallion -->
+  <path d="M250 260 H280" stroke="#607D8B" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <!-- Flujo de medallion -->
+  <path d="M410 230 H425" stroke="#607D8B" stroke-width="2" marker-end="url(#arrowhead)" />
+  <path d="M535 230 H550" stroke="#607D8B" stroke-width="2" marker-end="url(#arrowhead)" />
+  <path d="M480 270 V290" stroke="#607D8B" stroke-width="2" marker-end="url(#arrowhead)" />
+  <path d="M480 360 V380" stroke="#607D8B" stroke-width="2" marker-end="url(#arrowhead)" />
+  <path d="M460 410 H500" stroke="#607D8B" stroke-width="2" marker-end="url(#arrowhead)" />
+  <path d="M480 440 V460" stroke="#607D8B" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <!-- Medallion a Modelado -->
+  <path d="M660 230 H710" stroke="#607D8B" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <!-- Modelado a Visualización -->
+  <path d="M830 320 V360" stroke="#607D8B" stroke-width="2" marker-end="url(#arrowhead)" />
+  
+  <!-- Medallion a Visualización -->
+  <path d="M660 410 H710" stroke="#607D8B" stroke-width="2" marker-end="url(#arrowhead)" />
+
+</svg>

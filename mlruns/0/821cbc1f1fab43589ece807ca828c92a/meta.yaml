@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/andresariasmedina/Documents/HackaDataFusion/mlruns/0/821cbc1f1fab43589ece807ca828c92a/artifacts
+end_time: 1746391768357
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 821cbc1f1fab43589ece807ca828c92a
+run_name: stylish-snail-309
+run_uuid: 821cbc1f1fab43589ece807ca828c92a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1746391768345
+status: 3
+tags: []
+user_id: andresariasmedina

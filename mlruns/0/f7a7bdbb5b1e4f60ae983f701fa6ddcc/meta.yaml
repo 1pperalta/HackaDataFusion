@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/andresariasmedina/Documents/HackaDataFusion/mlruns/0/f7a7bdbb5b1e4f60ae983f701fa6ddcc/artifacts
+end_time: 1746391597114
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: f7a7bdbb5b1e4f60ae983f701fa6ddcc
+run_name: sassy-skunk-120
+run_uuid: f7a7bdbb5b1e4f60ae983f701fa6ddcc
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1746391597102
+status: 3
+tags: []
+user_id: andresariasmedina
