@@ -1,0 +1,80 @@
+HackaDataFusion/
+├── data/
+│   ├── raw/                          # Datos crudos descargados de GitHub Archive
+│   │   └── 2025/                     # Organizado por año
+│   │       └── 05/                   # Mes
+│   │           ├── 02/               # Día
+│   │           │   └── *.json.gz     # Archivos comprimidos de eventos
+│   │           └── 03/               # Otro día
+│   │               └── *.json.gz
+│   └── processed/                    # Datos procesados en arquitectura Medallion
+│       ├── bronze/                   # Capa Bronze - datos raw parseados/validados
+│       │   ├── events/
+│       │   └── metadata/
+│       ├── silver/                   # Capa Silver - datos limpios y normalizados
+│       │   ├── events/
+│       │   ├── actors/
+│       │   ├── repositories/
+│       │   ├── organizations/
+│       │   └── payload_details/
+│       └── gold/                     # Capa Gold - métricas y agregaciones
+│           ├── actor_metrics/
+│           ├── repo_metrics/
+│           ├── org_metrics/
+│           ├── event_type_metrics/
+│           └── daily_summary/
+├── src/
+│   ├── config/                       # Configuraciones del proyecto
+│   │   ├── config.py
+│   │   └── settings.py
+│   ├── data_flow/                    # Scripts de procesamiento de datos
+│   │   ├── data_preprocessing/       # Procesamiento de datos
+│   │   │   ├── bronze_processor.py   # Procesamiento de capa Bronze
+│   │   │   ├── silver_processor.py   # Procesamiento de capa Silver
+│   │   │   └── gold_processor.py     # Procesamiento de capa Gold
+│   │   ├── download/                 # Scripts de descarga
+│   │   │   └── download.py           # Descarga de GitHub Archive
+│   │   └── storage/                  # Integración con almacenamiento
+│   │       ├── s3_upload.py          # Carga a S3 de datos raw
+│   │       └── s3_processed_upload.py# Carga a S3 de datos procesados
+│   ├── dbt/                          # Modelos DBT para transformaciones
+│   │   └── github_analytics/         # Proyecto principal de DBT
+│   │       ├── analyses/             # Análisis y consultas ad-hoc
+│   │       ├── data/                 # Datos semilla y de referencia
+│   │       ├── logs/                 # Archivos de registro
+│   │       ├── macros/               # Funciones reutilizables
+│   │       ├── metadata/             # Metadatos
+│   │       ├── models/               # Modelos DBT
+│   │       │   ├── bronze/           # Modelos de capa Bronze
+│   │       │   ├── silver/           # Modelos de capa Silver
+│   │       │   └── gold/             # Modelos de capa Gold
+│   │       │       ├── gold_actor_metrics.sql
+│   │       │       ├── gold_daily_summary.sql
+│   │       │       ├── gold_event_type_metrics.sql
+│   │       │       ├── gold_org_metrics.sql
+│   │       │       └── gold_repo_metrics.sql
+│   │       ├── dbt_project.yml       # Configuración principal DBT
+│   │       └── profiles.yml          # Perfiles de conexión
+│   ├── pipeline/                     # Orquestación de pipelines
+│   │   └── medalion_pipeline.py      # Pipeline maestro que ejecuta todo el flujo
+│   └── modeling/                     # Scripts de modelado y análisis
+│       └── clustering.py             # Análisis de clustering
+├── tests/                            # Pruebas unitarias y de integración
+│   ├── test_bronze.py
+│   ├── test_silver.py
+│   └── test_gold.py
+├── dashboards/                       # Recursos para visualizaciones
+│   └── tableau/                      # Archivos de Tableau
+│       ├── github_activity.twb
+│       └── repository_analysis.twb
+├── docs/                             # Documentación del proyecto
+│   ├── architecture.md
+│   ├── data_dictionary.md
+│   └── setup.md
+├── logs/                             # Archivos de registro
+│   ├── pipeline.log
+│   └── processing.log
+├── .env                              # Variables de entorno (credenciales)
+├── .gitignore                        # Archivos ignorados por git
+├── requirements.txt                  # Dependencias Python
+└── README.md                         # Documentación principal
