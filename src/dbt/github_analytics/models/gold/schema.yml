@@ -1,0 +1,80 @@
+version: 2
+
+models:
+  - name: gold_actor_metrics
+    description: "Métricas agregadas a nivel de actor en GitHub"
+    columns:
+      - name: actor_id
+        description: "ID único del actor"
+        tests:
+          - not_null
+      - name: total_events
+        description: "Número total de eventos realizados por el actor"
+      - name: unique_repos
+        description: "Número de repositorios únicos en los que el actor ha participado"
+      - name: first_event
+        description: "Timestamp del primer evento del actor"
+      - name: last_event
+        description: "Timestamp del último evento del actor"
+      - name: actor_login
+        description: "Nombre de usuario del actor"
+
+  - name: gold_repo_metrics
+    description: "Métricas agregadas a nivel de repositorio en GitHub"
+    columns:
+      - name: repo_id
+        description: "ID único del repositorio"
+        tests:
+          - not_null
+      - name: repo_name
+        description: "Nombre del repositorio"
+      - name: total_events
+        description: "Número total de eventos en el repositorio"
+      - name: unique_actors
+        description: "Número de actores únicos que han interactuado con el repositorio"
+      - name: first_event
+        description: "Timestamp del primer evento en el repositorio"
+      - name: last_event
+        description: "Timestamp del último evento en el repositorio"
+
+  - name: gold_org_metrics
+    description: "Métricas agregadas a nivel de organización en GitHub"
+    columns:
+      - name: org_name
+        description: "Nombre de la organización"
+        tests:
+          - not_null
+      - name: total_events
+        description: "Número total de eventos en la organización"
+      - name: unique_actors
+        description: "Número de actores únicos que han interactuado con la organización"
+      - name: unique_repos
+        description: "Número de repositorios únicos en la organización"
+      - name: first_event
+        description: "Timestamp del primer evento en la organización"
+      - name: last_event
+        description: "Timestamp del último evento en la organización"
+
+  - name: gold_event_type_metrics
+    description: "Distribución de eventos por tipo"
+    columns:
+      - name: event_type
+        description: "Tipo de evento"
+        tests:
+          - not_null
+      - name: count
+        description: "Número de eventos de este tipo"
+
+  - name: gold_daily_summary
+    description: "Resumen de actividad por hora"
+    columns:
+      - name: hour_bucket
+        description: "Intervalo de tiempo (por hora)"
+        tests:
+          - not_null
+      - name: total_events
+        description: "Número total de eventos en este intervalo"
+      - name: unique_actors
+        description: "Número de actores únicos activos en este intervalo"
+      - name: unique_repos
+        description: "Número de repositorios únicos activos en este intervalo"

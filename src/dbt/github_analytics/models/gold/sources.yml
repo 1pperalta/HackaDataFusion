@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: silver
+    database: GITHUB_DATA
+    schema: SILVER
+    tables:
+      - name: SILVER_EVENTS
+      - name: SILVER_REPOSITORIES

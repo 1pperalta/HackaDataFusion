@@ -33,8 +33,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger("gold_processor")
 
-# Directorios para datos - ajustados a la estructura real del proyecto
-DATA_DIR = Path("data")
+# Determinar la ruta del proyecto
+# Asumimos que este script está en src/data_flow/data_preprocessing/gold.py
+SCRIPT_PATH = Path(os.path.abspath(__file__))
+PROJECT_ROOT = SCRIPT_PATH.parent.parent.parent.parent  # Subir 3 niveles desde el script
+logger.info(f"Raíz del proyecto: {PROJECT_ROOT}")
+
+# Directorios para datos
+DATA_DIR = PROJECT_ROOT / "data"
 PROCESSED_DIR = DATA_DIR / "processed"
 SILVER_DIR = PROCESSED_DIR / "silver"
 GOLD_DIR = PROCESSED_DIR / "gold"
@@ -53,45 +59,80 @@ class GoldProcessor:
     def read_silver_table(self, table_name: str) -> pd.DataFrame:
         """
         Lee datos de tablas Silver usando patrones de nombre de archivo que coincidan con la estructura real
-        del proyecto
         """
-        # Patrones adaptados a los nombres de archivo que vemos en tu estructura
-        if table_name == 'events':
-            pattern = str(SILVER_DIR / "events" / "github_events_*.events.parquet")
-        elif table_name == 'actors':
-            pattern = str(SILVER_DIR / "actors" / "github_events_*.actors.parquet") 
-        elif table_name == 'repositories':
-            pattern = str(SILVER_DIR / "repositories" / "github_events_*.repositories.parquet")
-        elif table_name == 'organizations':
-            pattern = str(SILVER_DIR / "organizations" / "github_events_*.organizations.parquet")
-        elif table_name == 'payload_details':
-            pattern = str(SILVER_DIR / "payload_details" / "github_events_*.payload_details.parquet")
-        else:
-            pattern = str(SILVER_DIR / table_name / f"*{table_name}*.parquet")
-        
-        logger.info(f"Buscando archivos con patrón: {pattern}")
-        files = glob.glob(pattern)
-        
-        if not files:
-            logger.warning(f"[WARN] No files for silver/{table_name}")
+        # Verificar si existe el directorio Silver
+        if not SILVER_DIR.exists():
+            logger.error(f"Directorio Silver no existe: {SILVER_DIR}")
+            
+            # Buscar posibles ubicaciones alternativas
+            alt_dirs = [
+                PROJECT_ROOT / "data" / "silver",
+                PROJECT_ROOT / "data" / "processed" / "silver",
+                PROJECT_ROOT / "dbt" / "github_analytics" / "data" / "silver",
+                PROJECT_ROOT / "src" / "data" / "silver"
+            ]
+            
+            for alt_dir in alt_dirs:
+                if alt_dir.exists():
+                    logger.info(f"Encontrado directorio alternativo: {alt_dir}")
+                    return self.read_files_from_location(alt_dir, table_name)
+            
             return pd.DataFrame()
         
-        logger.info(f"Encontrados {len(files)} archivos para {table_name}")
+        # Buscar en ubicación principal
+        return self.read_files_from_location(SILVER_DIR, table_name)
+    
+    def read_files_from_location(self, base_dir: Path, table_name: str) -> pd.DataFrame:
+        """
+        Lee archivos desde una ubicación base específica
+        """
+        # Diferentes patrones a probar
+        patterns = [
+            # Patrón según la captura de pantalla
+            str(base_dir / table_name / f"github_events_*.{table_name}.parquet"),
+            # Patrones alternativos
+            str(base_dir / table_name / f"*.{table_name}.parquet"),
+            str(base_dir / table_name / "*.parquet"),
+            str(base_dir / f"{table_name}" / "*.parquet"),
+            str(base_dir / f"{table_name}.parquet"),
+            str(base_dir / f"silver_{table_name}.parquet")
+        ]
+        
+        # Buscar en todos los patrones
+        all_files = []
+        for pattern in patterns:
+            logger.info(f"Buscando archivos con patrón: {pattern}")
+            files = glob.glob(pattern)
+            if files:
+                logger.info(f"Encontrados {len(files)} archivos con patrón {pattern}")
+                all_files.extend(files)
+        
+        if not all_files:
+            logger.warning(f"[WARN] No files found for silver/{table_name} after trying multiple patterns")
+            return pd.DataFrame()
+        
+        # Eliminar duplicados
+        all_files = list(set(all_files))
+        logger.info(f"Encontrados {len(all_files)} archivos únicos para {table_name}")
+        
+        # Leer archivos
         dfs = []
-        for f in files:
+        for f in all_files:
             try:
                 logger.info(f"Leyendo archivo: {f}")
-                dfs.append(pd.read_parquet(f))
+                df = pd.read_parquet(f)
+                logger.info(f"Archivo leído correctamente: {len(df)} filas")
+                dfs.append(df)
             except Exception as e:
                 logger.error(f"[ERROR] reading {f}: {e}")
         
-        df = pd.concat(dfs, ignore_index=True) if dfs else pd.DataFrame()
-        if df.empty:
-            logger.warning(f"[WARN] silver/{table_name} loaded 0 rows")
-        else:
-            logger.info(f"Tabla {table_name} cargada con {len(df)} filas")
-            logger.info(f"Columnas disponibles: {df.columns.tolist()}")
+        if not dfs:
+            logger.warning(f"[WARN] No se pudieron leer datos para {table_name}")
+            return pd.DataFrame()
         
+        # Combinar dataframes
+        df = pd.concat(dfs, ignore_index=True)
+        logger.info(f"Tabla {table_name} cargada con {len(df)} filas y columnas: {df.columns.tolist()}")
         return df
 
     def process_actor_metrics(self, events: pd.DataFrame, actors: pd.DataFrame) -> pd.DataFrame:
@@ -358,6 +399,8 @@ def parse_args():
                        help="Forzar CSV en lugar de Parquet")
     parser.add_argument("--debug", action="store_true",
                        help="Habilitar modo debug con más logging")
+    parser.add_argument("--data-dir", type=str, default=None,
+                       help="Directorio explícito donde buscar datos")
     return parser.parse_args()
 
 
@@ -369,6 +412,20 @@ def main():
     if args.debug:
         logging.getLogger("gold_processor").setLevel(logging.DEBUG)
         logger.debug("Modo debug activado")
+    
+    # Sobrescribir directorio de datos si se especifica
+    global DATA_DIR, PROCESSED_DIR, SILVER_DIR, GOLD_DIR
+    if args.data_dir:
+        DATA_DIR = Path(args.data_dir)
+        PROCESSED_DIR = DATA_DIR / "processed"
+        SILVER_DIR = PROCESSED_DIR / "silver"
+        GOLD_DIR = PROCESSED_DIR / "gold"
+    
+    # Listar directorios en la raíz del proyecto para depuración
+    logger.info("Listando directorios en la raíz del proyecto:")
+    for item in PROJECT_ROOT.iterdir():
+        if item.is_dir():
+            logger.info(f"  - {item}")
     
     # Mostrar información sobre directorios
     logger.info(f"Directorio de datos: {DATA_DIR.absolute()}")
