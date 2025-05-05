@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/andresariasmedina/Documents/HackaDataFusion/mlruns/0/3c996a5d239e4b2595871f73ba8e50cc/artifacts
+end_time: 1746402373059
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 3c996a5d239e4b2595871f73ba8e50cc
+run_name: nimble-mink-328
+run_uuid: 3c996a5d239e4b2595871f73ba8e50cc
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1746402373046
+status: 3
+tags: []
+user_id: andresariasmedina

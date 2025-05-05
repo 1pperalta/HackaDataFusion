@@ -1,3 +1,16 @@
 data/raw/2025/05/02/2025-05-02-10.json.gz
 data/raw/2025/05/01/2025-05-01-10.json.gz
 data/raw/2025/05/03/2025-05-03-10.json.gz
+data/raw/2025/05/03/2025-05-03-13.json.gz
+data/raw/2025/05/03/2025-05-03-12.json.gz
+data/raw/2025/05/03/2025-05-03-19.json.gz
+data/raw/2025/05/03/2025-05-03-18.json.gz
+data/raw/2025/05/03/2025-05-03-11.json.gz
+data/raw/2025/05/03/2025-05-03-14.json.gz
+data/raw/2025/05/03/2025-05-03-22.json.gz
+data/raw/2025/05/03/2025-05-03-23.json.gz
+data/raw/2025/05/03/2025-05-03-15.json.gz
+data/raw/2025/05/03/2025-05-03-21.json.gz
+data/raw/2025/05/03/2025-05-03-17.json.gz
+data/raw/2025/05/03/2025-05-03-16.json.gz
+data/raw/2025/05/03/2025-05-03-20.json.gz
