@@ -9,6 +9,7 @@ This directory contains the core components of the GitHub Event Intelligence Pip
   - **data_preprocessing/**: Medallion architecture implementation (bronze, silver, gold layers)
   - **download/**: Utilities for downloading GitHub Archive data
   - **storage/**: Modules for S3 and Snowflake data storage operations
+  - **models/**: Model creation, testing and monitoring
 - **dbt/**: DBT models and transformations for analytical data modeling
 - **pipeline/**: Pipeline orchestration modules
 - **scripts/**: Utility scripts for data catalog and validation
